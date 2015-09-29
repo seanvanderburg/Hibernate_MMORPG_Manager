@@ -12,14 +12,11 @@ import javax.persistence.Id;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 
-
-
-
 @Entity
 public class Player {
     @Id @GeneratedValue(strategy=GenerationType.AUTO)
     private Long id;
-    @Column(unique = true)
+   // @Column(unique = true)
     private String username;
     private String balance;
     private String firstname;
@@ -28,7 +25,7 @@ public class Player {
     private String characterslots; 
     private String lastpayment; 
     private String monthspayed; 
-    @Column(unique = true)
+   // @Column(unique = true)
     private String password; 
     private String banned; 
     
