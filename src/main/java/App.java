@@ -1,25 +1,11 @@
-import java.sql.SQLException;
 import java.util.List;
-import java.util.logging.ErrorManager;
 
-import javax.swing.JFrame;
-
-import entities.Player;
-
-import org.hibernate.HibernateException;
 import org.hibernate.Session;
 import org.postgresql.util.PSQLException;
 
-public class App {
-	public static String correctinput;
+import entities.Player;
 
-	public static void main(String[] args) {
-		Frontend frontend = new Frontend();
-		frontend.setTitle("MMORG Database Management");
-		frontend.setSize(800, 600);
-		frontend.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		frontend.setVisible(true);
-	}
+public class App {
 
 	public static void login() {
 
@@ -27,41 +13,45 @@ public class App {
 				.getCurrentSession();
 
 		sessionA.beginTransaction();
-		Frontend.removeMessage();
+		Front.removeMessage();
 		List result = HibernateUtil.getSessionFactory().getCurrentSession()
 				.createQuery("from Player where username = ? OR password = ?")
-				.setString(0, Frontend.getUsernameInput())
-				.setString(1, Frontend.getPasswInput()).list();
+				.setString(0, Front.getUsernameInput())
+				.setString(1, Front.getPasswInput()).list();
 
-		if (result.isEmpty()) {
-			Frontend.addIncorrectMessage();
+		if (result.isEmpty() || result == null) {
+			System.out.println(result);
+			Front.addIncorrectMessage();
 			sessionA.getTransaction().commit();
 		} else {
 			System.out.println("Uitvoer inloggen:" + result);
 			sessionA.getTransaction().commit();
+			Front.toggleMenu();
+
 		}
 	}
+	
 
 	public static void registerUser() throws PSQLException {
 		Session sessionB = HibernateUtil.getSessionFactory()
 				.getCurrentSession();
 		sessionB.beginTransaction();
-		Frontend.removeMessage();
-		List checkresult = HibernateUtil.getSessionFactory()
+		Front.removeMessage();
+		List<?> checkresult = HibernateUtil.getSessionFactory()
 				.getCurrentSession()
 				.createQuery("from Player where username = ? OR password = ?")
-				.setString(0, Frontend.getUsernameInput())
-				.setString(1, Frontend.getPasswInput()).list();
+				.setString(0, Front.getUsernameInput())
+				.setString(1, Front.getPasswInput()).list();
 
 		if (checkresult.isEmpty()) {
 			Player player = new Player();
-			player.setUsername(Frontend.getUsernameInput());
-			player.setPassword(Frontend.getPasswInput());
+			player.setUsername(Front.getUsernameInput());
+			player.setPassword(Front.getPasswInput());
 			sessionB.save(player);
-			Frontend.addConfirmMessage();
+			Front.addConfirmMessage();
 			sessionB.getTransaction().commit();
 		} else {
-			Frontend.addUsedMessage();
+			Front.addUsedMessage();
 			sessionB.getTransaction().commit();
 		}
 	}

@@ -1,12 +1,14 @@
 package entities;
 
-import javax.persistence.CascadeType;
+
+import java.util.HashSet;
+import java.util.Set;
+
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
+import javax.persistence.ManyToMany;
 
 @Entity
 public class Character {
@@ -17,9 +19,9 @@ public class Character {
     private String charclass;
     private String race;
     private int level;
-    @ManyToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name= "player_id")
-    private Player player;
+   
+    @ManyToMany(mappedBy="characters")
+    private Set<Player> players = new HashSet<Player>();
 
   
     public Character() {}
@@ -49,19 +51,21 @@ public class Character {
     }
     
    
-    public Player getPlayer() {
-        return player;
-    }
-
-    public void setPlayer(Player player) {
-        this.player = player;
-    }
+    public Set<Player> getPlayers()  
+    {  
+        return players;  
+    }  
+    public void setCharacters(Set<Player> players)  
+    {  
+        this.players = players;  
+    }  
+    
 
 	@Override
 	public String toString() {
 		return "Character [id=" + id + ", name=" + name + ", charclass="
 				+ charclass + ", race=" + race + ", level=" + level
-				+ ", player=" + player + "]";
+				+ ", players=" + players + "]";
 	}
   
  

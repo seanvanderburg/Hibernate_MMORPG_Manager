@@ -4,19 +4,19 @@ import java.util.HashSet;
 import java.util.Set;
 
 import javax.persistence.CascadeType;
-import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinTable;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToMany;
 import javax.persistence.OneToMany;
-import javax.persistence.OneToOne;
 
 @Entity
 public class Player {
     @Id @GeneratedValue(strategy=GenerationType.AUTO)
     private Long id;
-   // @Column(unique = true)
     private String username;
     private String balance;
     private String firstname;
@@ -25,11 +25,11 @@ public class Player {
     private String characterslots; 
     private String lastpayment; 
     private String monthspayed; 
-   // @Column(unique = true)
     private String password; 
     private String banned; 
     
-    @OneToMany(mappedBy="player", cascade = CascadeType.ALL) 
+    @ManyToMany(cascade = {CascadeType.ALL})
+    @JoinTable(name="owns", joinColumns={@JoinColumn(name="name")}, inverseJoinColumns={@JoinColumn(name="user_name")})
     private Set<Character> characters = new HashSet<Character>();
     
     @OneToMany(mappedBy="player", cascade = CascadeType.ALL) 
