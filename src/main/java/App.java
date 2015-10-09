@@ -157,8 +157,6 @@ public class App {
 	
 	public static void addCharacter(){
 		
-		
-		
 		Session session = HibernateUtil.getSessionFactory()
 				.getCurrentSession();
 		session.beginTransaction();
