@@ -4,11 +4,15 @@ package entities;
 import java.util.HashSet;
 import java.util.Set;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
 import javax.persistence.ManyToMany;
+import javax.persistence.ManyToOne;
 
 @Entity
 public class Character {
@@ -19,10 +23,10 @@ public class Character {
     private String charclass;
     private String race;
     private int level;
+    
    
-    @ManyToMany(mappedBy="characters")
-    private Set<Player> players = new HashSet<Player>();
-
+    @ManyToOne(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    private Player player;
   
     public Character() {}
 
@@ -34,14 +38,39 @@ public class Character {
         this.level = level;
     }
 
-	public String getName() {
+    public int getLevel() {
+        return level;
+    }
+
+    public void setLevel(int level) {
+        this.level = level;
+    }
+    
+	public String getCharClass() {
+        return charclass;
+    }
+
+    public void setCharClass(String charclass) {
+        this.charclass = charclass;
+    }
+
+    public String getRace() {
+        return race;
+    }
+
+    public void setRace(String race) {
+        this.race = race;
+    }
+
+    public String getName() {
         return name;
     }
 
     public void setName(String name) {
         this.name = name;
     }
-
+    
+    
     public Long getId() {
         return id;
     }
@@ -51,22 +80,22 @@ public class Character {
     }
     
    
-    public Set<Player> getPlayers()  
-    {  
-        return players;  
-    }  
-    public void setCharacters(Set<Player> players)  
-    {  
-        this.players = players;  
-    }  
-    
+    public Player getPlayer() {
+		return player;
+	}
+
+	public void setPlayer(Player player) {
+		this.player = player;
+	}
 
 	@Override
 	public String toString() {
 		return "Character [id=" + id + ", name=" + name + ", charclass="
-				+ charclass + ", race=" + race + ", level=" + level
-				+ ", players=" + players + "]";
+				+ charclass + ", race=" + race + ", level=" + level + "]";
 	}
+    
+	
+	
   
  
 

@@ -5,6 +5,7 @@ import java.util.Set;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
@@ -18,29 +19,28 @@ public class Player {
     @Id @GeneratedValue(strategy=GenerationType.AUTO)
     private Long id;
     private String username;
-    private String balance;
+    private double balance;
     private String firstname;
     private String lastname; 
     private String iban; 
-    private String characterslots; 
+    private int characterslots; 
     private String lastpayment; 
-    private String monthspayed; 
+    private int monthspayed; 
     private String password; 
     private String banned; 
     
-    @ManyToMany(cascade = {CascadeType.ALL})
-    @JoinTable(name="owns", joinColumns={@JoinColumn(name="name")}, inverseJoinColumns={@JoinColumn(name="user_name")})
+    @OneToMany(fetch = FetchType.LAZY, mappedBy="player", cascade = CascadeType.ALL) 
     private Set<Character> characters = new HashSet<Character>();
     
-    @OneToMany(mappedBy="player", cascade = CascadeType.ALL) 
+    @OneToMany(fetch = FetchType.LAZY, mappedBy="player", cascade = CascadeType.ALL) 
     private Set<Server> servers = new HashSet<Server>();
 
     
     public Player() {}
 
-    public Player(String username, String balance, String firstname, String lastname, 
-    String iban, String characterslots, String lastpayment, String monthspayed, 
-    String password, String banned) {
+    public Player(String username, double balance, String firstname, String lastname, 
+    String iban, int characterslots, String lastpayment, int monthspayed, 
+    String password, String banned, Set<Character> characters, Set<Server> servers) {
         this();
         this.username = username;
         this.balance = balance;
@@ -52,6 +52,8 @@ public class Player {
         this.monthspayed = monthspayed;
         this.password = password;
         this.banned = banned;
+        this.characters = characters;
+        this.servers = servers;
     }
 
 
@@ -73,7 +75,14 @@ public class Player {
         this.characters = characters;  
     }  
     
-
+    public Set<Server> getServers()  
+    {  
+        return servers;  
+    }  
+    public void setServers(Set<Server> servers)  
+    {  
+        this.servers = servers;  
+    }  
     
     public String getUsername() {
 		return username;
@@ -83,11 +92,11 @@ public class Player {
 		this.username = username;
 	}
 
-	public String getBalance() {
+	public double getBalance() {
 		return balance;
 	}
 
-	public void setBalance(String balance) {
+	public void setBalance(double balance) {
 		this.balance = balance;
 	}
 
@@ -115,11 +124,11 @@ public class Player {
 		this.iban = iban;
 	}
 
-	public String getCharacterslots() {
+	public int getCharacterslots() {
 		return characterslots;
 	}
 
-	public void setCharacterslots(String characterslots) {
+	public void setCharacterslots(int characterslots) {
 		this.characterslots = characterslots;
 	}
 
@@ -131,11 +140,11 @@ public class Player {
 		this.lastpayment = lastpayment;
 	}
 
-	public String getMonthspayed() {
+	public int getMonthspayed() {
 		return monthspayed;
 	}
 
-	public void setMonthspayed(String monthspayed) {
+	public void setMonthspayed(int monthspayed) {
 		this.monthspayed = monthspayed;
 	}
 
@@ -162,9 +171,10 @@ public class Player {
 				+ lastname + ", iban=" + iban + ", characterslots="
 				+ characterslots + ", lastpayment=" + lastpayment
 				+ ", monthspayed=" + monthspayed + ", password=" + password
-				+ ", banned=" + banned + ", characters=" + characters
-				+ ", servers=" + servers + "]";
+				+ ", banned=" + banned + "]";
 	}
+
+	
 
       
 }
