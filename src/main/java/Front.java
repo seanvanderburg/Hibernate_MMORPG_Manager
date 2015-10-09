@@ -1,10 +1,9 @@
 import java.awt.CardLayout;
-import java.awt.FlowLayout;
+
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
 import javax.swing.BorderFactory;
-import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -14,6 +13,7 @@ import javax.swing.SwingUtilities;
 
 import org.postgresql.util.PSQLException;
 
+//frontend and user operations
 public class Front {
 	JFrame frame = new JFrame("Java MMORPG app");
 	static JPanel panelCont = new JPanel();
@@ -25,11 +25,16 @@ public class Front {
 	JButton login = new JButton("Login");
 	JButton characters = new JButton("Characters");
 	JButton account = new JButton("Account");
+	JButton addmoney = new JButton("Add money");
+	
+	//cardlayout enables us to build multiple menus for the interface, and switch between them
 	static CardLayout cl = new CardLayout();
 
 	static JLabel loginnotify = new JLabel();
 	JLabel text1 = new JLabel("Voer gebruikersnaam in:");
 	JLabel text2 = new JLabel("Voer wachtwoord in:");
+	JLabel moneyText = new JLabel("Add money:");
+	JLabel moneyIndicator = new JLabel();
 	JTextField passwinput = new JTextField("", 15);
 	JTextField userinput = new JTextField("", 15);
 
@@ -55,8 +60,14 @@ public class Front {
 		panelMenu.setBorder(BorderFactory.createEmptyBorder(100, 100, 100, 100));
 		panelMenu.add(characters);
 		panelMenu.add(account);
-		// container
-
+		
+		// account elements
+		//panelAccount.add();
+		
+		// character elements
+		// panelCharacter.add();
+		
+		// main container
 		panelCont.add(panelLogin, "1");
 		panelCont.add(panelMenu, "2");
 		panelCont.add(panelCharacter, "3");
@@ -88,6 +99,7 @@ public class Front {
 		characters.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
 				cl.show(panelCont, "3");
+				System.out.println(username);
 			}
 		});
 		
@@ -112,20 +124,20 @@ public class Front {
 	}
 
 	public static void addIncorrectMessage() {
-		loginnotify.setText("Username of wachtwoord niet correct");
+		loginnotify.setText("Username or password incorrect");
 	}
 
 	public static void removeMessage() {
-		loginnotify.setText("");
+		loginnotify.setText(null);
 	}
 
 
 	public static void addUsedMessage() {
-		loginnotify.setText("Username of wachtwoord is al in gebruik");
+		loginnotify.setText("Username or password already in use");
 	}
 
 	public static void addConfirmMessage() {
-		loginnotify.setText("Gebruiker is geregristreerd");
+		loginnotify.setText("New user is now registered");
 	}
 
 	public static String getPasswInput() {

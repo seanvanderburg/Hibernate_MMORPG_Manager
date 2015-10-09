@@ -5,6 +5,7 @@ import org.postgresql.util.PSQLException;
 
 import entities.Player;
 
+//database related operations
 public class App {
 
 	public static void login() {
@@ -54,5 +55,10 @@ public class App {
 			Front.addUsedMessage();
 			sessionB.getTransaction().commit();
 		}
+	}
+	
+	public static void addMoney(){
+		
+		//TODO add money to user account. update record, insert balance... where user = username
 	}
 }
