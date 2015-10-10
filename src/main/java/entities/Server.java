@@ -1,11 +1,17 @@
 package entities;
 
+import java.util.HashSet;
+import java.util.Set;
+
 import javax.persistence.CascadeType;
+import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
+import javax.persistence.ManyToMany;
 import javax.persistence.ManyToOne;
 
 @Entity
@@ -16,18 +22,17 @@ public class Server {
     private String adress;
     private String name;
     private String location;
-    private String maxusers;
-    private String connectedusers;
+    private int maxusers;
+    private int connectedusers;
     
 
-    @ManyToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name= "player_id")
-    private Player player;
+    @ManyToMany(fetch = FetchType.LAZY, mappedBy = "servers")
+    private Set<Player> players = new HashSet<Player>();
     
     public Server() {}
 
     public Server(Long id, String adress, String name, String location,
-			String maxusers, String connectedusers, Player player) {
+			int maxusers, int connectedusers, Set<Player> players) {
 		this();
 		this.id = id;
 		this.adress = adress;
@@ -35,9 +40,10 @@ public class Server {
 		this.location = location;
 		this.maxusers = maxusers;
 		this.connectedusers = connectedusers;
-		this.player = player;
+		this.players = players;
 	}
-
+    
+	@Column(name = "server_id", unique = true, nullable = false)
     public Long getId() {
 		return id;
 	}
@@ -70,35 +76,35 @@ public class Server {
 		this.location = location;
 	}
 
-	public String getMaxusers() {
+	public int getMaxusers() {
 		return maxusers;
 	}
 
-	public void setMaxusers(String maxusers) {
+	public void setMaxusers(int maxusers) {
 		this.maxusers = maxusers;
 	}
 
-	public String getConnectedusers() {
+	public int getConnectedusers() {
 		return connectedusers;
 	}
 
-	public void setConnectedusers(String connectedusers) {
+	public void setConnectedusers(int connectedusers) {
 		this.connectedusers = connectedusers;
 	}
-
-	public Player getPlayer() {
-		return player;
+	
+	public Set<Player> getPlayers() {
+		return players;
 	}
 
-	public void setPlayer(Player player) {
-		this.player = player;
+	public void setPlayers(Set<Player> players) {
+		this.players = players;
 	}
 
 	@Override
 	public String toString() {
 		return "Server [id=" + id + ", adress=" + adress + ", name=" + name
 				+ ", location=" + location + ", maxusers=" + maxusers
-				+ ", connectedusers=" + connectedusers + ", player=" + player
+				+ ", connectedusers=" + connectedusers + ", players=" + players
 				+ "]";
 	}
 

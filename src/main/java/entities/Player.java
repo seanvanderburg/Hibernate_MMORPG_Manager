@@ -4,6 +4,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 import javax.persistence.CascadeType;
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
@@ -32,7 +33,10 @@ public class Player {
     @OneToMany(fetch = FetchType.LAZY, mappedBy="player", cascade = CascadeType.ALL) 
     private Set<Character> characters = new HashSet<Character>();
     
-    @OneToMany(fetch = FetchType.LAZY, mappedBy="player", cascade = CascadeType.ALL) 
+    @ManyToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+	@JoinTable(name = "player_server", joinColumns = { 
+			@JoinColumn(name = "player_id", nullable = false, updatable = false) }, 
+			inverseJoinColumns = { @JoinColumn(name = "server_id", nullable = false, updatable = false) })
     private Set<Server> servers = new HashSet<Server>();
 
     
@@ -56,7 +60,7 @@ public class Player {
         this.servers = servers;
     }
 
-
+	@Column(name = "player_id", unique = true, nullable = false)
     public Long getId() {
         return id;
     }

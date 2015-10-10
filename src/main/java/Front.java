@@ -1,6 +1,7 @@
 import java.awt.CardLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.ArrayList;
 
 import javax.swing.BorderFactory;
 import javax.swing.JButton;
@@ -11,15 +12,13 @@ import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.swing.SwingUtilities;
 
-import org.hibernate.Criteria;
-import org.hibernate.criterion.Restrictions;
 import org.postgresql.util.PSQLException;
 
-import entities.Player;
+import entities.Character;
 
-//frontend and user operations
+
 public class Front {
-
+	//layout components
 	static String username;
 	static String password;
 	static String money;
@@ -28,6 +27,11 @@ public class Front {
 	static int slots;
 	static String selectedClass;
 	static String selectedRace;
+	static int selectedChar;
+	static String charName;
+	static String charLevel;
+	static String charClass;
+	static String charRace;
 	
 	JFrame frame = new JFrame("Java MMORPG app");
 	static JPanel panelCont = new JPanel();
@@ -43,7 +47,7 @@ public class Front {
 	JButton addslots = new JButton("Buy one character-slot");
 	JButton backacc = new JButton("Back");
 	JButton backchar = new JButton("Back");
-
+	JButton joinserver = new JButton("Join server");
 
 	static CardLayout cl = new CardLayout();
 
@@ -62,7 +66,16 @@ public class Front {
 	static JLabel abortpayment = new JLabel();
 	JLabel slotsindicator = new JLabel();
 	JLabel slotsindicatorB = new JLabel();
-	JButton selectChar = new JButton("Create char");
+	JButton createchar = new JButton("Create character");
+	JButton selectchar = new JButton("Select character");
+	static JLabel charNamel = new JLabel();
+	static JLabel charLevell = new JLabel();
+	static JLabel charClassl = new JLabel();
+	static JLabel charRacel = new JLabel();
+	static JLabel noslots = new JLabel();
+	static JLabel fullserver = new JLabel();
+	static JLabel connected = new JLabel();
+
 	
 	String[] subscriptions = new String[] { "1 month", "2 months", "3 months","1 year" };
 	JComboBox<String> subscription = new JComboBox<String>(subscriptions);
@@ -73,9 +86,11 @@ public class Front {
 	String[] characterraces = new String[] { "Male", "Female"};
 	JComboBox<String> characterrace = new JComboBox<String>(characterraces);
 	
-	
+	JComboBox<String> characterSelector = new JComboBox<String>();
 
 	public Front() {
+		//build the frontend using the components
+	System.out.println();
 		panelCont.setLayout(cl);
 
 		// login elements
@@ -114,9 +129,8 @@ public class Front {
 		// character elements
 		panelCharacter.add(characterclass);
 		panelCharacter.add(characterrace);
-		panelCharacter.add(selectChar);
+		panelCharacter.add(createchar);
 		panelCharacter.add(slotsindicatorB);
-		panelCharacter.add(backchar);
 		
 		// main container
 		panelCont.add(panelLogin, "1");
@@ -125,7 +139,7 @@ public class Front {
 		panelCont.add(panelAccount, "4");
 
 		cl.show(panelCont, "1");
-
+		//actionlisteners to react on user input
 		register.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
 				try {
@@ -144,6 +158,8 @@ public class Front {
 				username = userinput.getText();
 				password = passwinput.getText();
 				App.login();
+				
+				
 			}
 		});
 		
@@ -163,6 +179,15 @@ public class Front {
 			public void actionPerformed(ActionEvent arg0) {
 				cl.show(panelCont, "3");
 				slotsindicatorB.setText("Current amount of Character-slots:" + App.getSlots());
+				
+				panelCharacter.add(characterSelector);
+				panelCharacter.add(selectchar);
+				panelCharacter.add(backchar);
+				panelCharacter.add(noslots);
+				panelCharacter.add(fullserver);
+				panelCharacter.add(connected);
+				panelCharacter.add(joinserver);
+
 			}
 		});
 
@@ -224,17 +249,45 @@ public class Front {
 			}
 		});
 
-		selectChar.addActionListener(new ActionListener() {
+		createchar.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				
 				selectedClass = (String) characterclass.getSelectedItem();
 				selectedRace = (String) characterrace.getSelectedItem();
 				App.addCharacter();
+				ArrayList<entities.Character> characterlist = new ArrayList<entities.Character>(App.getCharacters());
+				String[] charactersarray = characterlist.toArray(new String[characterlist.size()]);
+				System.out.println(charactersarray.length);
+				for(String str : charactersarray) {
+					characterSelector.addItem(str);
+				}
 			slotsindicatorB.setText("Current amount of Character-slots: " + App.getSlots());
 			}
 		});
 		
+		selectchar.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				selectedChar = (int) characterSelector.getSelectedIndex();
+				ArrayList<entities.Character> details = new ArrayList<entities.Character>();
+				details = (ArrayList<Character>) App.getCharactersDetails();
+				Character selectedchardetails = details.get(selectedChar);
+				panelCharacter.add(charNamel);
+				panelCharacter.add(charLevell);
+				panelCharacter.add(charClassl);
+				panelCharacter.add(charRacel);
+
+				charLevell.setText("Character Level: " + selectedchardetails.getLevel());
+				charClassl.setText("Character Class: " + selectedchardetails.getCharClass());
+				charNamel.setText("Character Name: " + selectedchardetails.getName());
+				charRacel.setText("Character Race: " + selectedchardetails.getRace());
+			}
+		});
 		
+		joinserver.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent e) {
+				App.joinServer();
+			}
+		});
 		
 		frame.add(panelCont);
 		frame.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
@@ -247,6 +300,7 @@ public class Front {
 		frame.setSize(400, 400);
 	}
 
+	
 	public static void toggleMenu() {
 		cl.show(panelCont, "2");
 		loggedIn.setText("Logged in as: " + getUsernameInput());
@@ -259,6 +313,13 @@ public class Front {
 	public static void removeMessage() {
 		loginnotify.setText(null);
 		abortpayment.setText(null);
+		charLevell.setText(null);
+		charClassl.setText(null);
+		charNamel.setText(null);
+		charRacel.setText(null);
+		connected.setText(null);
+		fullserver.setText(null);
+
 	}
 
 	public static void addUsedMessage() {
@@ -271,7 +332,16 @@ public class Front {
 	public static void addPurchaseAbortMessage() {
 		abortpayment.setText("No money! Purchase aborted. Please load more money.");
 	}
-
+	public static void addFullSlots() {
+		noslots.setText("No slots left! Please buy slots");
+	}
+	public static void addFullserver() {
+		fullserver.setText("Server is full");
+	}
+	
+	public static void addConnected() {
+		connected.setText("Connected to server");
+	}
 	public static String getPasswInput() {
 		return password;
 	}
