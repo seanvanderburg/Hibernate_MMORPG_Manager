@@ -49,7 +49,7 @@ public class Front {
 	JButton backchar = new JButton("Back");
 	JButton joinserver = new JButton("Join server");
 
-	static CardLayout cl = new CardLayout();
+	static CardLayout cardLayout = new CardLayout();
 
 	static JLabel loginnotify = new JLabel();
 	JLabel text1 = new JLabel("Enter username:");
@@ -89,9 +89,11 @@ public class Front {
 	JComboBox<String> characterSelector = new JComboBox<String>();
 
 	public Front() {
-		//build the frontend using the components
-	System.out.println();
-		panelCont.setLayout(cl);
+		
+		// build the frontend using the components in this constructor
+		
+		// set the cardLayout
+		panelCont.setLayout(cardLayout);
 
 		// login elements
 		panelLogin.setBorder(BorderFactory
@@ -138,8 +140,11 @@ public class Front {
 		panelCont.add(panelCharacter, "3");
 		panelCont.add(panelAccount, "4");
 
-		cl.show(panelCont, "1");
-		//actionlisteners to react on user input
+		cardLayout.show(panelCont, "1");
+		
+		//actionlisteners to deal with all user input. communication with the App backend takes place as well
+		
+		//register button
 		register.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
 				try {
@@ -153,6 +158,7 @@ public class Front {
 			}
 		});
 
+		//login button
 		login.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
 				username = userinput.getText();
@@ -163,21 +169,29 @@ public class Front {
 			}
 		});
 		
+		//back button in account menu
 		backacc.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
-				cl.show(panelCont, "2");
+				cardLayout.show(panelCont, "2");
 			}
 		});
 		
+		//back button in character menu
 		backchar.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
-				cl.show(panelCont, "2");
+				cardLayout.show(panelCont, "2");
 			}
 		});
 
+		//characters button in main menu
 		characters.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
-				cl.show(panelCont, "3");
+				ArrayList<String> characterlist = new ArrayList<String>(App.getCharacters());
+				characterSelector.removeAllItems();
+				for(String characters : characterlist) {
+					characterSelector.addItem(characters);
+				}
+				cardLayout.show(panelCont, "3");
 				slotsindicatorB.setText("Current amount of Character-slots:" + App.getSlots());
 				
 				panelCharacter.add(characterSelector);
@@ -191,9 +205,10 @@ public class Front {
 			}
 		});
 
+		//account button in main menu
 		account.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent arg0) {
-				cl.show(panelCont, "4");
+				cardLayout.show(panelCont, "4");
 				moneyIndicator.setText("Current money balance: $"+ App.getPlayerBalance());
 				monthsIndicator.setText("Amount of subscribed months: " + App.getSubscribedMonths());
 				slotsindicator.setText("Current amount of Character-slots: " + App.getSlots());
@@ -250,36 +265,39 @@ public class Front {
 		});
 
 		createchar.addActionListener(new ActionListener() {
+			//create character and get some data to put in the characterSelector combobox
 			public void actionPerformed(ActionEvent e) {
 				
 				selectedClass = (String) characterclass.getSelectedItem();
 				selectedRace = (String) characterrace.getSelectedItem();
 				App.addCharacter();
-				ArrayList<entities.Character> characterlist = new ArrayList<entities.Character>(App.getCharacters());
-				String[] charactersarray = characterlist.toArray(new String[characterlist.size()]);
-				System.out.println(charactersarray.length);
-				for(String str : charactersarray) {
-					characterSelector.addItem(str);
+				
+				ArrayList<String> characterlist = new ArrayList<String>(App.getCharacters());
+				characterSelector.removeAllItems();
+				for(String characters : characterlist) {
+					characterSelector.addItem(characters);
 				}
-			slotsindicatorB.setText("Current amount of Character-slots: " + App.getSlots());
+				slotsindicatorB.setText("Current amount of Character-slots: " + App.getSlots());
 			}
 		});
-		
+
+		//Get character details based on the index that the user has chosen in the characterSelector combobox 
 		selectchar.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				selectedChar = (int) characterSelector.getSelectedIndex();
 				ArrayList<entities.Character> details = new ArrayList<entities.Character>();
 				details = (ArrayList<Character>) App.getCharactersDetails();
 				Character selectedchardetails = details.get(selectedChar);
-				panelCharacter.add(charNamel);
-				panelCharacter.add(charLevell);
-				panelCharacter.add(charClassl);
-				panelCharacter.add(charRacel);
 
 				charLevell.setText("Character Level: " + selectedchardetails.getLevel());
 				charClassl.setText("Character Class: " + selectedchardetails.getCharClass());
 				charNamel.setText("Character Name: " + selectedchardetails.getName());
 				charRacel.setText("Character Race: " + selectedchardetails.getRace());
+				
+				panelCharacter.add(charNamel);
+				panelCharacter.add(charLevell);
+				panelCharacter.add(charClassl);
+				panelCharacter.add(charRacel);
 			}
 		});
 		
@@ -302,8 +320,8 @@ public class Front {
 
 	
 	public static void toggleMenu() {
-		cl.show(panelCont, "2");
-		loggedIn.setText("Logged in as: " + getUsernameInput());
+		cardLayout.show(panelCont, "2");
+		loggedIn.setText("Logged in as: " + username);
 	}
 
 	public static void addIncorrectMessage() {
@@ -311,6 +329,8 @@ public class Front {
 	}
 
 	public static void removeMessage() {
+		//Removes all sorts of messages (Empties the jlabel values) so messages dont stick around
+		//when the user performs another action
 		loginnotify.setText(null);
 		abortpayment.setText(null);
 		charLevell.setText(null);
@@ -321,7 +341,7 @@ public class Front {
 		fullserver.setText(null);
 
 	}
-
+	//Following methods set all sorts of messages based on actions in the App class
 	public static void addUsedMessage() {
 		loginnotify.setText("Username or password already in use");
 	}
@@ -342,13 +362,7 @@ public class Front {
 	public static void addConnected() {
 		connected.setText("Connected to server");
 	}
-	public static String getPasswInput() {
-		return password;
-	}
-
-	public static String getUsernameInput() {
-		return username;
-	}
+	
 
 	public static void main(String[] args) {
 		SwingUtilities.invokeLater(new Runnable() {

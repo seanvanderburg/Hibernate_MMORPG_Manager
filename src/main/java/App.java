@@ -24,8 +24,8 @@ public class App {
 		Front.removeMessage();
 		List result = HibernateUtil.getSessionFactory().getCurrentSession()
 				.createQuery("from Player where username = ? OR password = ?")
-				.setString(0, Front.getUsernameInput())
-				.setString(1, Front.getPasswInput()).list();
+				.setString(0, Front.username)
+				.setString(1, Front.password).list();
 		
 		if (result.isEmpty() || result == null) {
 			System.out.println(result);
@@ -49,13 +49,13 @@ public class App {
 		List<?> checkresult = HibernateUtil.getSessionFactory()
 				.getCurrentSession()
 				.createQuery("from Player where username = ? OR password = ?")
-				.setString(0, Front.getUsernameInput())
-				.setString(1, Front.getPasswInput()).list();
+				.setString(0, Front.username)
+				.setString(1, Front.password).list();
 
 		if (checkresult.isEmpty()) {
 			Player player = new Player();
-			player.setUsername(Front.getUsernameInput());
-			player.setPassword(Front.getPasswInput());
+			player.setUsername(Front.username);
+			player.setPassword(Front.password);
 			player.setCharacterslots(5);
 			player.setBalance(0);
 			player.setFirstname(getRandomString());
@@ -83,6 +83,12 @@ public class App {
 		
 		System.out.println(player.toString());
 		System.out.println(Front.money);
+		if(Front.money == null || Front.money.isEmpty()){
+			System.out.println("input is empty");
+			session.getTransaction().commit();
+
+		}
+		else{
 		double enteredMoney = Double.parseDouble(Front.money);
 		System.out.println(enteredMoney);
 		double currentMoney = player.getBalance();
@@ -91,7 +97,7 @@ public class App {
 		System.out.println(player.toString());
 		session.update(player);
 		session.getTransaction().commit();
-		
+		}
 	}
 	
 	public static void addSlots(){
@@ -231,7 +237,7 @@ public class App {
 	}
 	
 	public static List<Character> getCharactersDetails(){
-		//get all details for the characters the current user hass
+		//get all details for the characters the logged in user has
 		Front.removeMessage();
 		Session session = HibernateUtil.getSessionFactory()
 				.getCurrentSession();
@@ -309,17 +315,25 @@ public class App {
 		Player player = (Player) criteria.add(Restrictions.eq("username", username))
 		                             .uniqueResult();
 		
+		//Use this String as a criteria to determine which server we need. We see if there is a
+		//server with this adress in the db, if there's a match we assign the server record to the 
+		//server object
+		String adress = "eclqo";
+		Criteria criteriab = session.createCriteria(Server.class);
+		Server server = (Server) criteriab.add(Restrictions.eq("adress", adress))
+		                             .uniqueResult();
 		
-		Server server = new Server();
+		//The excercise says these servers should be created in the db beforehand instead of being created here. 
+		//The player joins a server that is supposed to be present in the db already. The player should
+		//join a existing server using the criteria stuff above
+
+		//check if the server is full, and if not add a player
 		if(server.getConnectedusers() < 18){
 	    server.getPlayers().add(player);
 
 	    player.getServers().add(server);
-		server.setAdress(getRandomString());
-		server.setLocation(getRandomString());
-		server.setName(getRandomString());
 		server.setConnectedusers(server.getConnectedusers() + 1);
-
+		System.out.println(server.getConnectedusers());
 		session.save(player);
 		session.save(server);
 		session.getTransaction().commit();
@@ -327,7 +341,7 @@ public class App {
 		}
 		else{
 		session.getTransaction().commit();
-		Front.addFullSlots();
+		Front.addFullserver();
 		}
 	}
 	
