@@ -315,17 +315,12 @@ public class App {
 		Player player = (Player) criteria.add(Restrictions.eq("username", username))
 		                             .uniqueResult();
 		
-		//Use this String as a criteria to determine which server we need. We see if there is a
-		//server with this adress in the db, if there's a match we assign the server record to the 
-		//server object
+		//Use this String as a criteria to determine which server we need.
 		String adress = "eclqo";
 		Criteria criteriab = session.createCriteria(Server.class);
 		Server server = (Server) criteriab.add(Restrictions.eq("adress", adress))
 		                             .uniqueResult();
 		
-		//The excercise says these servers should be created in the db beforehand instead of being created here. 
-		//The player joins a server that is supposed to be present in the db already. The player should
-		//join a existing server using the criteria stuff above
 
 		//check if the server is full, and if not add a player
 		if(server.getConnectedusers() < 18){
